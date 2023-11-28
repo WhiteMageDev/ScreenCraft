@@ -153,10 +153,10 @@ namespace ScreenCraft
           //  SecondImage = new Image();
             SecondImage.Source = bitmapImage;
 
-           // Canvas.SetLeft(SecondImage, 0);
-          //  Canvas.SetTop(SecondImage, 0);
-          //  SecondImage.Opacity = 0.5;
-          //  MainCanvas.Children.Add(SecondImage);
+           Canvas.SetLeft(SecondImage, 0);
+           Canvas.SetTop(SecondImage, 0);
+           SecondImage.Opacity = 0.5;
+           MainCanvas.Children.Add(SecondImage);
 
 
             MainCanvas.MouseLeftButtonDown += Canvas_MouseDown;
