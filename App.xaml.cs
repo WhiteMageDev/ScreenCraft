@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using static System.Windows.Forms.Design.AxImporter;
 using Application = System.Windows.Application;
 
 namespace ScreenCraft
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         private  GlobalKeyboardHook _globalKeyboardHook;
@@ -34,9 +22,13 @@ namespace ScreenCraft
             _globalKeyboardHook.KeyboardPressed += OnKeyboardPressed;
 
             InitializeNotifyIcon();
-
             InitializeEditorWindow();
-
+        }
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            _notifyIcon.Visible = false;
+            _notifyIcon.Dispose();
         }
 
         private void InitializeEditorWindow()
@@ -44,11 +36,10 @@ namespace ScreenCraft
             editor = new EditorWindow()
             {
                 WindowStyle = WindowStyle.None,
-                WindowState = WindowState.Minimized, // Сначала окно будет свернуто
+                WindowState = WindowState.Minimized,
             };
             editor.Visibility = Visibility.Hidden;
         }
-
         private void InitializeNotifyIcon()
         {
             _notifyIcon = new NotifyIcon
@@ -92,12 +83,6 @@ namespace ScreenCraft
 
             _notifyIcon.ContextMenuStrip = contextMenu;
         }
-        protected override void OnExit(ExitEventArgs e)
-        {
-            base.OnExit(e);
-            _notifyIcon.Visible = false;
-            _notifyIcon.Dispose();
-        }
 
         private void OnKeyboardPressed(object? sender, GlobalKeyboardHookEventArgs e)
         {
@@ -110,15 +95,13 @@ namespace ScreenCraft
                 ShowEditorWindow();
             }
         }
-
         private void ShowEditorWindow()
         {
             screenshotBitmapImage = CaptureFullScreen();
 
-            editor.Visibility = Visibility.Visible; // При клике на иконку в трее показываем окно
+            editor.Visibility = Visibility.Visible;
             editor.WindowState = WindowState.Maximized;
         }
-
         public static BitmapImage? CaptureFullScreen()
         {
             if (Screen.PrimaryScreen == null) return null;
@@ -140,17 +123,6 @@ namespace ScreenCraft
                 bitmapImage.EndInit();
             }
             return bitmapImage;
-        }
-
-        public static int GetScreenW()
-        {
-            System.Drawing.Rectangle bounds = Screen.PrimaryScreen.Bounds;
-            return (int)bounds.Width;
-        }
-        public static int GetScreenH()
-        {
-            System.Drawing.Rectangle bounds = Screen.PrimaryScreen.Bounds;
-            return (int)bounds.Height;
         }
     }
 }

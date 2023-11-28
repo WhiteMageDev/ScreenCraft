@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Diagnostics;
 
 namespace ScreenCraft
 {
@@ -188,7 +184,6 @@ namespace ScreenCraft
             };
             canvas.Children.Add(currentLine);
 
-            // Рисуем треугольник в конце линии (стрелка)
             Point arrowPoint1 = new Point(startPoint.X + 10, startPoint.Y + 10);
             Point arrowPoint2 = new Point(startPoint.X - 10, startPoint.Y + 10);
 
@@ -206,7 +201,6 @@ namespace ScreenCraft
             {
                 Point currentPoint = e.GetPosition(canvas);
 
-                // Обновляем координаты конца линии
                 currentLine.X2 = currentPoint.X;
                 currentLine.Y2 = currentPoint.Y;
 
@@ -302,7 +296,7 @@ namespace ScreenCraft
                 rectangle = new Rectangle
                 {
                     Stroke = Brushes.Red,
-                    StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }), // Здесь указываем пунктирную линию (4 - длина пунктира, 2 - длина разрыва
+                    StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }),
                     StrokeThickness = 1,
                     Fill = Brushes.Transparent,
                     Width = 0,
@@ -331,7 +325,7 @@ namespace ScreenCraft
         {
             if (!canvas.IsMouseOver)
             {
-                return; // Остановить выполнение, если мышь не захвачена или нет прямоугольника или кнопка мыши не нажата
+                return;
             }
             if (rectangle != null && e.LeftButton == MouseButtonState.Pressed)
             {
@@ -383,30 +377,21 @@ namespace ScreenCraft
 
         private Image BlurSelectedArea(double l, double t, double w, double h)
         {
-            // Получение координат и размеров прямоугольника
             double left = l;
             double top = t;
             double width = w;
             double height = h;
 
-            // Создание изображения из Canvas
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)canvas.ActualWidth, (int)canvas.ActualHeight, 96, 96, PixelFormats.Default);
             rtb.Render(canvas);
 
-            // Создание обрезанного изображения для прямоугольной области
             CroppedBitmap croppedBitmap = new CroppedBitmap(rtb, new Int32Rect((int)left, (int)top, (int)width, (int)height));
-
-            // Применение эффекта блюра
-            BlurEffect blurEffect = new BlurEffect { Radius = 10 }; // Установите радиус размытия по своему усмотрению
-
-            // Создание Image для отображения обработанного изображения
+            BlurEffect blurEffect = new BlurEffect { Radius = 10 };
             Image blurredImage = new Image
             {
                 Source = croppedBitmap,
                 Effect = blurEffect
             };
-
-            // Размещение обработанного изображения на Canvas
             Canvas.SetLeft(blurredImage, left);
             Canvas.SetTop(blurredImage, top);
             return blurredImage;
@@ -449,14 +434,13 @@ namespace ScreenCraft
                 adornerDecorator.Child = textBox;
 
                 AdornerLayer adornerLayer = AdornerLayer.GetAdornerLayer(textBox);
-                adornerLayer.Add(new DottedBorderAdorner(textBox)); // Создаем и добавляем пунктирную границу
+                adornerLayer.Add(new DottedBorderAdorner(textBox));
 
 
                 Canvas.SetLeft(adornerDecorator, point.X);
                 Canvas.SetTop(adornerDecorator, point.Y);
                 canvas.Children.Add(adornerDecorator);
 
-                //textBox.KeyUp += TextBox_KeyUp;
                 textBox.Visibility = Visibility.Visible;
                 textBox.Focus();
             }
@@ -479,16 +463,9 @@ namespace ScreenCraft
             }
         }
 
-        public void HandleMouseMove(object sender, MouseEventArgs e)
-        {
-            //throw new NotImplementedException();
-            //canvas.Cursor = Cursors.IBeam;
-        }
+        public void HandleMouseMove(object sender, MouseEventArgs e) { }
 
-        public void HandleMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
+        public void HandleMouseUp(object sender, MouseButtonEventArgs e) { }
     }
     public class ScreenshotAreaPickingState : IEditorState
     {
@@ -516,7 +493,7 @@ namespace ScreenCraft
             editor.SelectedArea = new Rectangle
             {
                 Stroke = Brushes.White,
-                StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }), // 4 - line, 2 - break
+                StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }),
                 StrokeThickness = 1,
                 Fill = Brushes.Transparent,
                 Width = 0,
@@ -531,7 +508,7 @@ namespace ScreenCraft
         }
         public void HandleMouseMove(object sender, MouseEventArgs e)
         {
-            Trace.WriteLine("ScreenshotAreaPickingState");
+
             if (editor.SelectedArea == null) return;
 
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -566,7 +543,6 @@ namespace ScreenCraft
                 editor.MainCanvas.Children.Remove(rectSizeLabel);
                 rectSizeLabel = null;
                 editor.UpdateImage();
-                //RectArea_MouseEnter(rectArea, e);
                 editor.ShowRectMenu();
             }
         }
@@ -736,7 +712,6 @@ namespace ScreenCraft
 
             }
             startPoint = newPoint;
-            editor.SelectedArea = editor.SelectedArea;
         }
 
         private bool CheckBounds (double left, double top, double width, double height)
