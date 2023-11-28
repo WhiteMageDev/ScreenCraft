@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Res\Buttons\arrow.png" />
+    <None Remove="Res\Buttons\copy.png" />
+    <None Remove="Res\Buttons\exit.png" />
+    <None Remove="Res\Buttons\fill.png" />
+    <None Remove="Res\Buttons\line.png" />
+    <None Remove="Res\Buttons\marker.png" />
+    <None Remove="Res\Buttons\pen.png" />
+    <None Remove="Res\Buttons\rect.png" />
+    <None Remove="Res\Buttons\save.png" />
+    <None Remove="Res\Buttons\text.png" />
+    <None Remove="Res\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Res\Buttons\arrow.png" />
+    <Resource Include="Res\Buttons\copy.png" />
+    <Resource Include="Res\Buttons\exit.png" />
+    <Resource Include="Res\Buttons\save.png" />
+    <Resource Include="Res\Buttons\marker.png" />
+    <Resource Include="Res\Buttons\pen.png" />
+    <Resource Include="Res\Buttons\rect.png" />
+    <Resource Include="Res\Buttons\fill.png" />
+    <Resource Include="Res\Buttons\line.png" />
+    <Resource Include="Res\Buttons\text.png" />
+    <Resource Include="Res\icon.ico" />
+  </ItemGroup>
+
+</Project>
