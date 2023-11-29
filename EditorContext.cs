@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 
 namespace ScreenCraft
@@ -586,16 +587,29 @@ namespace ScreenCraft
     public class ScreenshotAreaMovingState : IEditorState
     {
         private EditorWindow editor;
-
+        private Canvas MainCanvas;
         private Point startPoint;
-        private int rType;
-
-
+        private bool isResizing = false;
+        private const double cornerSize = 10;
         private DateTime lastClickTime = DateTime.MinValue;
         private const int doubleClickTimeThreshold = 500;
+        private Corner currentCorner;
+        private enum Corner
+        {
+            TopLeft,
+            TopMiddle,
+            TopRight,
+            BottomLeft,
+            BottomMiddle,
+            BottomRight,
+            MiddleLeft,
+            MiddleRight,
+            None
+        }
         public ScreenshotAreaMovingState(EditorWindow editor)
         {
             this.editor = editor;
+            MainCanvas = editor.MainCanvas;
         }
         public void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -610,123 +624,338 @@ namespace ScreenCraft
             else
                 lastClickTime = now;
 
-            startPoint = e.GetPosition(editor.MainCanvas);
-            rType = editor.ResizerType(e, editor.SelectedArea);
+            startPoint = Mouse.GetPosition(MainCanvas);
+
+            currentCorner = GetCorner(startPoint);
+            isResizing = true;
+
             editor.SelectedArea.CaptureMouse();
+        }
+        private void SetCursour(Corner corner)
+        {
+            Cursor pointer = Cursors.Arrow;
+            switch (corner)
+            {
+                case Corner.TopLeft:
+                case Corner.BottomRight:
+                    pointer = Cursors.SizeNWSE;
+                    break;
+                case Corner.TopMiddle:
+                case Corner.BottomMiddle:
+                    pointer = Cursors.SizeNS;
+                    break;
+                case Corner.TopRight:
+                case Corner.BottomLeft:
+                    pointer = Cursors.SizeNESW;
+                    break;
+                case Corner.MiddleLeft:
+                case Corner.MiddleRight:
+                    pointer = Cursors.SizeWE;
+                    break;
+                case Corner.None:
+                    pointer = Cursors.SizeAll;
+                    break;
+            }
+            editor.Cursor = pointer;
+        }
+        private Corner GetCorner(Point position)
+        {
+            Rectangle rect = editor.SelectedArea;
+
+            double left = Canvas.GetLeft(rect);
+            double top = Canvas.GetTop(rect);
+            double width = rect.Width;
+            double height = rect.Height;
+
+            if(position.X - cornerSize < left)
+            {
+                if(position.Y - cornerSize < top)
+                {
+                    return Corner.TopLeft;
+                }
+                if (position.Y + cornerSize > top + height)
+                {
+                    return Corner.BottomLeft;
+                }
+                if (position.Y - cornerSize < top + height / 2 && position.Y + cornerSize > top + height / 2)
+                {
+                    return Corner.MiddleLeft;
+                }
+
+            }
+            else if(position.X + cornerSize > left + width)
+            {
+                if (position.Y - cornerSize < top)
+                {
+                    return Corner.TopRight;
+                }
+                if (position.Y + cornerSize > top + height)
+                {
+                    return Corner.BottomRight;
+                }
+                if (position.Y - cornerSize < top + height / 2 && position.Y + cornerSize > top + height / 2)
+                {
+                    return Corner.MiddleRight;
+                }
+            }
+            else if(position.X - cornerSize < left + width / 2 && position.X + cornerSize > left + width / 2)
+            {
+                if (position.Y - cornerSize < top)
+                {
+                    return Corner.TopMiddle;
+                }
+                if (position.Y + cornerSize > top + height)
+                {
+                    return Corner.BottomMiddle;
+                }
+            }
+            return Corner.None;
         }
         public void HandleMouseMove(object sender, MouseEventArgs e)
         {
             if (editor.SelectedArea == null) return;
 
-            Point newPoint = e.GetPosition(editor.MainCanvas);
-            double left = Canvas.GetLeft(editor.SelectedArea);
-            double top = Canvas.GetTop(editor.SelectedArea);
-            double width = editor.SelectedArea.Width;
-            double height = editor.SelectedArea.Height;
+            Point newPoint = Mouse.GetPosition(MainCanvas);
 
-            if (editor.ResizerType(e, editor.SelectedArea) > 0)
-                editor.Cursor = Cursors.SizeAll;
-            else
-                editor.Cursor = Cursors.Hand;
-
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (isResizing)
             {
-                editor.HideRectMenu();
-                switch (rType)
+                SetCursour(currentCorner);
+
+                double left = Canvas.GetLeft(editor.SelectedArea);
+                double top = Canvas.GetTop(editor.SelectedArea);
+                double width = editor.SelectedArea.Width;
+                double height = editor.SelectedArea.Height;
+                double diffX = (newPoint.X - startPoint.X);
+                double diffY = (newPoint.Y - startPoint.Y);
+
+                if (currentCorner != Corner.None)
                 {
-                    case 1:
-                        {
-                            left += newPoint.X - startPoint.X;
-                            top += newPoint.Y - startPoint.Y;
-                            width -= newPoint.X - startPoint.X;
-                            height -= newPoint.Y - startPoint.Y;
+                    switch (currentCorner)
+                    {
+                        case Corner.MiddleRight:
+                            double newWidthMR = width + diffX;
+                            if (newWidthMR < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                currentCorner = Corner.MiddleLeft;
+                            }
+                            else
+                            {
+                                editor.SelectedArea.Width = newPoint.X - left;
+                            }
                             break;
-                        }
-                    case 2:
-                        {
-                            top += newPoint.Y - startPoint.Y;
-                            width += newPoint.X - startPoint.X;
-                            height -= newPoint.Y - startPoint.Y;
 
+                        case Corner.MiddleLeft:
+                            double newWidthML = width - diffX;
+                            if (newWidthML < 0)
+                            {
+                                currentCorner = Corner.MiddleRight;
+                                editor.SelectedArea.Width = 0;
+                                Canvas.SetLeft(editor.SelectedArea, left + width);
+                            }
+                            else
+                            {
+                                Canvas.SetLeft(editor.SelectedArea, newPoint.X);
+                                editor.SelectedArea.Width = width + (left - newPoint.X);
+                            }
                             break;
-                        }
-                    case 3:
-                        {
-                            width += newPoint.X - startPoint.X;
-                            height += newPoint.Y - startPoint.Y;
 
+                        case Corner.BottomMiddle:
+                            double newHeightBM = height + diffY;
+                            if (newHeightBM < 0)
+                            {
+                                editor.SelectedArea.Height = 0;
+                                currentCorner = Corner.TopMiddle;
+                            }
+                            else
+                            {
+                                editor.SelectedArea.Height = newPoint.Y - top;
+                            }
                             break;
-                        }
-                    case 4:
-                        {
-                            left += newPoint.X - startPoint.X;
-                            width -= newPoint.X - startPoint.X;
-                            height += newPoint.Y - startPoint.Y;
 
+                        case Corner.TopMiddle:
+                            double newHeightTM = height - diffY;
+                            if (newHeightTM < 0)
+                            {
+                                currentCorner = Corner.BottomMiddle;
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetTop(editor.SelectedArea, top + height);
+                            }
+                            else
+                            {
+                                Canvas.SetTop(editor.SelectedArea, newPoint.Y);
+                                editor.SelectedArea.Height = height + (top - newPoint.Y);
+                            }
                             break;
-                        }
-                    case 5:
-                        {
-                            top += newPoint.Y - startPoint.Y;
-                            height -= newPoint.Y - startPoint.Y;
 
-                            break;
-                        }
-                    case 6:
-                        {
-                            width += newPoint.X - startPoint.X;
+                        case Corner.TopRight:
 
-                            break;
-                        }
-                    case 7:
-                        {
-                            height += newPoint.Y - startPoint.Y;
+                            double newWidthTR = width + diffX;
+                            double newHeightTR = height - diffY;
 
+                            if (newWidthTR < 0 && newHeightTR < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetTop(editor.SelectedArea, top + height);
+                                currentCorner = Corner.BottomLeft;
+                            }
+                            else if (newWidthTR < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                currentCorner = Corner.TopLeft;
+                            }
+                            else if (newHeightTR < 0)
+                            {
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetTop(editor.SelectedArea, top + height);
+                                currentCorner = Corner.BottomRight;
+                            }
+                            else
+                            {
+                                Canvas.SetTop(editor.SelectedArea, newPoint.Y);
+                                editor.SelectedArea.Height = height + (top - newPoint.Y);
+                                editor.SelectedArea.Width = newPoint.X - left;
+                            }
                             break;
-                        }
-                    case 8:
-                        {
-                            left += newPoint.X - startPoint.X;
-                            width -= newPoint.X - startPoint.X;
 
+                        case Corner.TopLeft:
+
+                            double newWidthTL = width - diffX;
+                            double newHeightTL = height - diffY;
+
+                            if (newWidthTL < 0 && newHeightTL < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetTop(editor.SelectedArea, top + height);
+                                Canvas.SetLeft(editor.SelectedArea, left + width);
+                                currentCorner = Corner.BottomRight;
+                            }
+                            else if (newWidthTL < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                currentCorner = Corner.TopRight;
+                            }
+                            else if (newHeightTL < 0)
+                            {
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetTop(editor.SelectedArea, top + height);
+                                currentCorner = Corner.BottomLeft;
+                            }
+                            else
+                            {
+                                Canvas.SetLeft(editor.SelectedArea, newPoint.X);
+                                Canvas.SetTop(editor.SelectedArea, newPoint.Y);
+                                editor.SelectedArea.Width = width + (left - newPoint.X);
+                                editor.SelectedArea.Height = height + (top - newPoint.Y);
+                            }
                             break;
-                        }
-                    default:
-                        {
-                            left += newPoint.X - startPoint.X;
-                            top += newPoint.Y - startPoint.Y;
+
+                        case Corner.BottomLeft:
+
+                            double newWidthBL = width - diffX;
+                            double newHeightBL = height + diffY;
+
+                            if (newWidthBL < 0 && newHeightBL < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                editor.SelectedArea.Height = 0;
+                                Canvas.SetLeft(editor.SelectedArea, left + width);
+                                currentCorner = Corner.TopRight;
+                            }
+                            else if (newWidthBL < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                Canvas.SetLeft(editor.SelectedArea, left + width);
+                                currentCorner = Corner.BottomRight;
+                            }
+                            else if (newHeightBL < 0)
+                            {
+                                editor.SelectedArea.Height = 0;
+                                currentCorner = Corner.TopLeft;
+                            }
+                            else
+                            {
+                                Canvas.SetLeft(editor.SelectedArea, newPoint.X);
+                                editor.SelectedArea.Width = width + (left - newPoint.X);
+                                editor.SelectedArea.Height = newPoint.Y - top;
+                            }
                             break;
-                        }
+
+                        case Corner.BottomRight:
+
+                            double newWidthBR = width + diffX;
+                            double newHeightBR = height + diffY;
+
+                            if (newWidthBR < 0 && newHeightBR < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                editor.SelectedArea.Height = 0;
+                                currentCorner = Corner.TopLeft;
+                            }
+                            else if (newWidthBR < 0)
+                            {
+                                editor.SelectedArea.Width = 0;
+                                currentCorner = Corner.BottomLeft;
+                            }
+                            else if (newHeightBR < 0)
+                            {
+                                editor.SelectedArea.Height = 0;
+                                currentCorner = Corner.TopRight;
+                            }
+                            else
+                            {
+                                editor.SelectedArea.Width = newPoint.X - left;
+                                editor.SelectedArea.Height = newPoint.Y - top;
+                            }
+                            break;
+                    }
                 }
-            }
-            if (width > 15 && height > 15)
-            {
-                if(CheckBounds(left, top, width, height))
+                else if (currentCorner == Corner.None)
                 {
-                    Canvas.SetLeft(editor.SelectedArea, left);
-                    Canvas.SetTop(editor.SelectedArea, top);
-                    editor.SelectedArea.Width = width;
-                    editor.SelectedArea.Height = height;
-                    editor.UpdateImage();
+                    double newLeft = left + diffX;
+                    double newtop = top + diffY;
+
+                    if (left + diffX < 0)
+                    {
+                        newLeft = 0;
+                        width += diffX;
+                    }
+                    else if (left + width + diffX > editor.MainCanvas.ActualWidth)
+                    {
+                        width -= diffX;
+                    }
+                    if (top + diffY < 0)
+                    {
+                        newtop = 0;
+                        height += diffY;
+                    }
+                    else if (top + height + diffY > editor.MainCanvas.ActualHeight)
+                    {
+                        height -= diffY;
+                    }
+                    if (width > 5 && height > 5)
+                    {
+                        Canvas.SetLeft(editor.SelectedArea, newLeft);
+                        Canvas.SetTop(editor.SelectedArea, newtop);
+                        editor.SelectedArea.Width = width;
+                        editor.SelectedArea.Height = height;
+                    }
                 }
-
+                startPoint = newPoint;
+                editor.UpdateImage();
             }
-            startPoint = newPoint;
-        }
-
-        private bool CheckBounds (double left, double top, double width, double height)
-        {
-            if (left < 0 || top < 0 || left + width > editor.MainCanvas.ActualWidth || top + height > editor.MainCanvas.ActualHeight)
-                return false;
             else
-                return true;
-
+            {
+                SetCursour(GetCorner(newPoint));
+            }
         }
-
         public void HandleMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (editor.SelectedArea == null) return;
             editor.ShowRectMenu();
+            isResizing = false;
             editor.SelectedArea.ReleaseMouseCapture();
         }
         private void HandleDoubleClick()

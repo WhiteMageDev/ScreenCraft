@@ -10,16 +10,29 @@ namespace ScreenCraft
 {
     public partial class App : Application
     {
-        private  GlobalKeyboardHook _globalKeyboardHook;
+        private static GlobalKeyboardHook _globalKeyboardHook;
         private NotifyIcon _notifyIcon = new();
-        private EditorWindow editor;
+        private static EditorWindow editor;
 
         public static BitmapImage? screenshotBitmapImage = null;
+
+        public static void KeyHookSwitch(bool isOn)
+        {
+            if(isOn)
+            {
+                _globalKeyboardHook.KeyboardPressed += OnKeyboardPressed;
+            }
+            else
+            {
+                _globalKeyboardHook.KeyboardPressed -= OnKeyboardPressed;
+            }
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             _globalKeyboardHook = new GlobalKeyboardHook(new Keys[] { Keys.PrintScreen });
-            _globalKeyboardHook.KeyboardPressed += OnKeyboardPressed;
+
+            KeyHookSwitch(true);
 
             InitializeNotifyIcon();
             InitializeEditorWindow();
@@ -84,7 +97,7 @@ namespace ScreenCraft
             _notifyIcon.ContextMenuStrip = contextMenu;
         }
 
-        private void OnKeyboardPressed(object? sender, GlobalKeyboardHookEventArgs e)
+        private static void OnKeyboardPressed(object? sender, GlobalKeyboardHookEventArgs e)
         {
             if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyDown)
             {
@@ -95,12 +108,14 @@ namespace ScreenCraft
                 ShowEditorWindow();
             }
         }
-        private void ShowEditorWindow()
+        private static void ShowEditorWindow()
         {
             screenshotBitmapImage = CaptureFullScreen();
 
             editor.Visibility = Visibility.Visible;
             editor.WindowState = WindowState.Maximized;
+
+            KeyHookSwitch(false);
         }
         public static BitmapImage? CaptureFullScreen()
         {

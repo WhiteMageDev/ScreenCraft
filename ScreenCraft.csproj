@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <None Remove="Res\Buttons\arrow.png" />
+    <None Remove="Res\Buttons\blur.png" />
+    <None Remove="Res\Buttons\color.png" />
     <None Remove="Res\Buttons\copy.png" />
     <None Remove="Res\Buttons\exit.png" />
     <None Remove="Res\Buttons\fill.png" />
@@ -19,11 +21,14 @@
     <None Remove="Res\Buttons\rect.png" />
     <None Remove="Res\Buttons\save.png" />
     <None Remove="Res\Buttons\text.png" />
+    <None Remove="Res\Buttons\undo.png" />
     <None Remove="Res\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Res\Buttons\arrow.png" />
+    <Resource Include="Res\Buttons\blur.png" />
+    <Resource Include="Res\Buttons\color.png" />
     <Resource Include="Res\Buttons\copy.png" />
     <Resource Include="Res\Buttons\exit.png" />
     <Resource Include="Res\Buttons\save.png" />
@@ -33,6 +38,7 @@
     <Resource Include="Res\Buttons\fill.png" />
     <Resource Include="Res\Buttons\line.png" />
     <Resource Include="Res\Buttons\text.png" />
+    <Resource Include="Res\Buttons\undo.png" />
     <Resource Include="Res\icon.ico" />
   </ItemGroup>
 

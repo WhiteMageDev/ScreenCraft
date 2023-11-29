@@ -59,8 +59,9 @@ namespace ScreenCraft
         {
             base.OnClosing(e);
 
-            e.Cancel = true; // Отменяем стандартное закрытие окна
-            Hide(); // Скрываем окно вместо закрытия
+            e.Cancel = true;
+            App.KeyHookSwitch(true);
+            Hide();
         }
 
         private void InitializeEditor()
@@ -173,7 +174,6 @@ namespace ScreenCraft
         private void RectArea_MouseEnter(object sender, MouseEventArgs e)
         {
             isMouseOverRect = true;
-            Cursor = Cursors.Hand;
             editorContext.SetState(screenshotAreaMovingState);
         }
         private void RectArea_MouseLeave(object sender, MouseEventArgs e)
@@ -246,16 +246,16 @@ namespace ScreenCraft
             CheckBox arrow = CreateButton("arrow", style);
             CheckBox rect = CreateButton("rect", style);
             CheckBox fill = CreateButton("fill", style);
-            CheckBox blur = CreateButton("pen", style);
+            CheckBox blur = CreateButton("blur", style);
             CheckBox marker = CreateButton("marker", style);
             CheckBox text = CreateButton("text", style);
 
-            Button undo = CreateActionButton("pen", aStyle);
+            Button undo = CreateActionButton("undo", aStyle);
             Button copy = CreateActionButton("copy", aStyle);
             Button save = CreateActionButton("save", aStyle);
             Button exit = CreateActionButton("exit", aStyle);
 
-            Button color = CreateActionButton("exit", aStyle);
+            Button color = CreateActionButton("color", aStyle);
             SelectedColor = Colors.Red;
             color.Background = new SolidColorBrush(SelectedColor);
 
