@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
+    <StartupObject>ScreenCraft.App</StartupObject>
+    <ApplicationIcon>Res\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,10 @@
     <None Remove="Res\Buttons\text.png" />
     <None Remove="Res\Buttons\undo.png" />
     <None Remove="Res\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Res\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

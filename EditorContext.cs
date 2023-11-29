@@ -624,6 +624,7 @@ namespace ScreenCraft
             else
                 lastClickTime = now;
 
+            editor.HideRectMenu();
             startPoint = Mouse.GetPosition(MainCanvas);
 
             currentCorner = GetCorner(startPoint);

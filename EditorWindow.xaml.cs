@@ -198,20 +198,49 @@ namespace ScreenCraft
 
         public void ShowRectMenu()
         {
-            Trace.WriteLine("ShowRectMenu");
 
-            double rectAreaBottom = Canvas.GetTop(SelectedArea) + SelectedArea.ActualHeight;
+            double rectLeft = Canvas.GetLeft(SelectedArea);
+            double rectTop = Canvas.GetTop(SelectedArea);
+            double rectWidth = SelectedArea.Width;
+            double rectHeight = SelectedArea.Height;
+
+            double canvasWidth = MainCanvas.ActualWidth;
             double canvasHeight = MainCanvas.ActualHeight;
-            if (canvasHeight - rectAreaBottom > MainMenu.Height)
+
+            double menuWidth = MainMenu.Width;
+            double menuHeight = MainMenu.Height;
+
+
+            double menuLeft = rectLeft + rectWidth / 2 - menuWidth / 2;
+
+            double menuTop;
+            
+            if(rectTop + rectHeight + menuHeight < canvasHeight)
             {
-                Canvas.SetTop(MainMenu, rectAreaBottom + 10);
+                menuTop = rectTop + rectHeight;
+            }
+            else if (rectTop - menuHeight > 0)
+            {
+                menuTop = rectTop - menuHeight;
             }
             else
             {
-                Canvas.SetTop(MainMenu, Canvas.GetTop(SelectedArea) + SelectedArea.Height - MainMenu.Height - 10);
+                menuTop = rectTop;
             }
-            Canvas.SetLeft(MainMenu, Canvas.GetLeft(SelectedArea) + SelectedArea.Width / 2 - MainMenu.Width / 2);
 
+            if(menuLeft < 0)
+            {
+                menuLeft = 0;
+            }
+            else if(menuLeft + menuWidth > canvasWidth)
+            {
+                menuLeft = canvasWidth - menuWidth;
+            }
+
+
+
+            Canvas.SetLeft(MainMenu, menuLeft);
+            Canvas.SetTop(MainMenu, menuTop);
 
             MainMenu.Visibility = Visibility.Visible;
         }
@@ -223,9 +252,10 @@ namespace ScreenCraft
         public void CreateRectMenu()
         {
             MainMenu = new StackPanel();
-            MainMenu.Height = 50;
-            MainMenu.Background = new SolidColorBrush(Color.FromArgb(150, 50, 50, 50));
+            MainMenu.Height = 40;
+            MainMenu.Width = 377;
             MainMenu.Orientation = Orientation.Horizontal;
+
 
             actionButtons = new();
             CreateMenuButtons();
@@ -234,7 +264,7 @@ namespace ScreenCraft
             Canvas.SetLeft(MainMenu, 0);
             Panel.SetZIndex(MainMenu, 200);
 
-            MainMenu.Visibility = Visibility.Hidden;
+            MainMenu.Visibility = Visibility.Collapsed;
         }
         private void CreateMenuButtons()
         {
@@ -344,7 +374,7 @@ namespace ScreenCraft
                 Content = new Image() { Source = new BitmapImage(new Uri($"pack://application:,,,/Res/Buttons/{name}.png")) },
                 Style = style,
                 IsChecked = isDrawing
-            };
+        };
             actionButtons.Add(r);
             return r;
         }
@@ -354,7 +384,7 @@ namespace ScreenCraft
             {
                 Content = new Image() { Source = new BitmapImage(new Uri($"pack://application:,,,/Res/Buttons/{name}.png")) },
                 Style = style
-            };
+        };
         }
         void ChangeToolState(object sender, bool drawingState, IEditorState state, Action? additionalAction)
         {
@@ -472,6 +502,8 @@ namespace ScreenCraft
         {
             try
             {
+                HideRectMenu();
+                SelectedArea.Visibility = Visibility.Hidden;
                 RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)canvas.ActualWidth, (int)canvas.ActualHeight, 96d, 96d, System.Windows.Media.PixelFormats.Default);
                 renderBitmap.Render(canvas);
 
