@@ -8,12 +8,13 @@
         Background="Transparent">
     <Window.Resources>
         <Style x:Key="MyButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="25"/>
-            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="Margin" Value="2"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Background" Value="Gray"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Black"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -41,12 +42,13 @@
             </Style.Triggers>
         </Style>
         <Style x:Key="MyCheckBoxStyle" TargetType="CheckBox">
-            <Setter Property="Width" Value="25"/>
-            <Setter Property="Height" Value="25"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="Margin" Value="2"/>
 
-            <Setter Property="Background" Value="Gray"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Black"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
@@ -67,9 +69,6 @@
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter Property="Background" Value="DarkGreen"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="False">
-                                <Setter Property="Background" Value="Gray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

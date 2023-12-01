@@ -24,28 +24,54 @@
     <None Remove="Res\Buttons\save.png" />
     <None Remove="Res\Buttons\text.png" />
     <None Remove="Res\Buttons\undo.png" />
-    <None Remove="Res\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Res\icon.ico" />
+    <Resource Include="Res\Buttons\arrow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\blur.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\color.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\copy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\exit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\save.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\marker.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\pen.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\rect.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\fill.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\line.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\text.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Res\Buttons\undo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Res\Buttons\arrow.png" />
-    <Resource Include="Res\Buttons\blur.png" />
-    <Resource Include="Res\Buttons\color.png" />
-    <Resource Include="Res\Buttons\copy.png" />
-    <Resource Include="Res\Buttons\exit.png" />
-    <Resource Include="Res\Buttons\save.png" />
-    <Resource Include="Res\Buttons\marker.png" />
-    <Resource Include="Res\Buttons\pen.png" />
-    <Resource Include="Res\Buttons\rect.png" />
-    <Resource Include="Res\Buttons\fill.png" />
-    <Resource Include="Res\Buttons\line.png" />
-    <Resource Include="Res\Buttons\text.png" />
-    <Resource Include="Res\Buttons\undo.png" />
-    <Resource Include="Res\icon.ico" />
+    <None Update="Res\icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

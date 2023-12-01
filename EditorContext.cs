@@ -296,11 +296,11 @@ namespace ScreenCraft
                 // blure rect
                 rectangle = new Rectangle
                 {
-                    Stroke = Brushes.Red,
+                    Stroke = Brushes.Transparent,
                     StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }),
                     StrokeThickness = 1,
-                    Fill = Brushes.Transparent,
-                    Width = 0,
+                    Fill = new SolidColorBrush(Color.FromArgb(64, 255, 0, 0)),
+                Width = 0,
                     Height = 0
                 };
             }
@@ -491,11 +491,13 @@ namespace ScreenCraft
                 ClearRect();
 
             startPoint = e.GetPosition(editor.MainCanvas);
+
+
             editor.SelectedArea = new Rectangle
             {
-                Stroke = Brushes.White,
-                StrokeDashArray = new DoubleCollection(new double[] { 4, 2 }),
-                StrokeThickness = 1,
+                Stroke = Brushes.Red,
+                StrokeDashArray = new DoubleCollection(new double[] { 3, 2 }),
+                StrokeThickness = 1.5,
                 Fill = Brushes.Transparent,
                 Width = 0,
                 Height = 0

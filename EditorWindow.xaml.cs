@@ -78,7 +78,7 @@ namespace ScreenCraft
 
             Canvas.SetLeft(SecondImage, 0);
             Canvas.SetTop(SecondImage, 0);
-            SecondImage.Opacity = 0.5;
+            SecondImage.Opacity = 0.6;
 
 
             SelectedArea = new();
@@ -252,8 +252,8 @@ namespace ScreenCraft
         public void CreateRectMenu()
         {
             MainMenu = new StackPanel();
-            MainMenu.Height = 40;
-            MainMenu.Width = 377;
+            MainMenu.Height = 50;
+            MainMenu.Width = 442;
             MainMenu.Orientation = Orientation.Horizontal;
 
 
