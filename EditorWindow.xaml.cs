@@ -21,6 +21,8 @@ namespace ScreenCraft
         public Image SecondImage;
         public Rectangle SelectedArea;
 
+        public SelectedVisual SelectedVisual;
+
         private StackPanel MainMenu;
 
         private List<CheckBox> actionButtons;
@@ -122,6 +124,8 @@ namespace ScreenCraft
                 MouseMove += MainWindow_MouseMove;
 
                 editorContext.SetState(screenshotAreaPickingState);
+
+                SelectedVisual = new SelectedVisual(MainCanvas);
             }
             else
             {
@@ -504,6 +508,7 @@ namespace ScreenCraft
             {
                 HideRectMenu();
                 SelectedArea.Visibility = Visibility.Hidden;
+                SelectedVisual.Hide();
                 RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)canvas.ActualWidth, (int)canvas.ActualHeight, 96d, 96d, System.Windows.Media.PixelFormats.Default);
                 renderBitmap.Render(canvas);
 

@@ -89,7 +89,7 @@ namespace ScreenCraft
             if (currentPolyLine != null)
             {
                 EditorWindow.ObjectsListAdd(currentPolyLine);
-                currentPolyLine.Points = SmoothPolyline(currentPolyLine.Points, 10);
+                currentPolyLine.Points = SmoothPolyline(currentPolyLine.Points, 2);
             }
             currentPolyLine = null;
         }
@@ -364,12 +364,16 @@ namespace ScreenCraft
                     if (left <= 0 || top <= 0 || width <= 0 || height <= 0) return;
 
                     editor.SelectedArea.Visibility = Visibility.Hidden;
+                    editor.SelectedVisual.Hide();
+                    editor.HideRectMenu();
 
                     Image blurredImage = BlurSelectedArea(left, top, width, height);
                     canvas.Children.Add(blurredImage);
                     EditorWindow.ObjectsListAdd(blurredImage);
 
                     editor.SelectedArea.Visibility = Visibility.Visible;
+                    editor.SelectedVisual.Show();
+                    editor.ShowRectMenu();
                 }
                 EditorWindow.ObjectsListAdd(rectangle);
                 rectangle = null;
@@ -495,15 +499,15 @@ namespace ScreenCraft
 
             editor.SelectedArea = new Rectangle
             {
-                Stroke = Brushes.Red,
-                StrokeDashArray = new DoubleCollection(new double[] { 3, 2 }),
-                StrokeThickness = 1.5,
+                Stroke = Brushes.White,
+                StrokeDashArray = new DoubleCollection(new double[] { 2, 2 }),
+                StrokeThickness = 1,
                 Fill = Brushes.Transparent,
                 Width = 0,
                 Height = 0
                 
             };
-            Panel.SetZIndex(editor.SelectedArea, 100);
+            Panel.SetZIndex(editor.SelectedArea, 199);
             Canvas.SetLeft(editor.SelectedArea, startPoint.X);
             Canvas.SetTop(editor.SelectedArea, startPoint.Y);
 
@@ -533,6 +537,7 @@ namespace ScreenCraft
                 Canvas.SetTop(editor.SelectedArea, height > 0 ? startY : currentY);
 
                 UpdateRectangleLabel(editor.SelectedArea.Width, editor.SelectedArea.Height);
+                editor.SelectedVisual.UpdatePosition(editor.SelectedArea);
             }
         }
 
@@ -592,7 +597,7 @@ namespace ScreenCraft
         private Canvas MainCanvas;
         private Point startPoint;
         private bool isResizing = false;
-        private const double cornerSize = 10;
+        private const double cornerSize = 8;
         private DateTime lastClickTime = DateTime.MinValue;
         private const int doubleClickTimeThreshold = 500;
         private Corner currentCorner;
@@ -744,7 +749,7 @@ namespace ScreenCraft
                             }
                             else
                             {
-                                editor.SelectedArea.Width = newPoint.X - left;
+                                editor.SelectedArea.Width = Math.Abs(newPoint.X - left);
                             }
                             break;
 
@@ -759,7 +764,7 @@ namespace ScreenCraft
                             else
                             {
                                 Canvas.SetLeft(editor.SelectedArea, newPoint.X);
-                                editor.SelectedArea.Width = width + (left - newPoint.X);
+                                editor.SelectedArea.Width = Math.Abs(width + (left - newPoint.X));
                             }
                             break;
 
@@ -772,7 +777,7 @@ namespace ScreenCraft
                             }
                             else
                             {
-                                editor.SelectedArea.Height = newPoint.Y - top;
+                                editor.SelectedArea.Height = Math.Abs(newPoint.Y - top);
                             }
                             break;
 
@@ -787,7 +792,7 @@ namespace ScreenCraft
                             else
                             {
                                 Canvas.SetTop(editor.SelectedArea, newPoint.Y);
-                                editor.SelectedArea.Height = height + (top - newPoint.Y);
+                                editor.SelectedArea.Height = Math.Abs(height + (top - newPoint.Y));
                             }
                             break;
 
@@ -817,8 +822,8 @@ namespace ScreenCraft
                             else
                             {
                                 Canvas.SetTop(editor.SelectedArea, newPoint.Y);
-                                editor.SelectedArea.Height = height + (top - newPoint.Y);
-                                editor.SelectedArea.Width = newPoint.X - left;
+                                editor.SelectedArea.Height = Math.Abs(height + (top - newPoint.Y));
+                                editor.SelectedArea.Width = Math.Abs(newPoint.X - left);
                             }
                             break;
 
@@ -850,8 +855,8 @@ namespace ScreenCraft
                             {
                                 Canvas.SetLeft(editor.SelectedArea, newPoint.X);
                                 Canvas.SetTop(editor.SelectedArea, newPoint.Y);
-                                editor.SelectedArea.Width = width + (left - newPoint.X);
-                                editor.SelectedArea.Height = height + (top - newPoint.Y);
+                                editor.SelectedArea.Width = Math.Abs(width + (left - newPoint.X));
+                                editor.SelectedArea.Height = Math.Abs(height + (top - newPoint.Y));
                             }
                             break;
 
@@ -881,8 +886,8 @@ namespace ScreenCraft
                             else
                             {
                                 Canvas.SetLeft(editor.SelectedArea, newPoint.X);
-                                editor.SelectedArea.Width = width + (left - newPoint.X);
-                                editor.SelectedArea.Height = newPoint.Y - top;
+                                editor.SelectedArea.Width = Math.Abs(width + (left - newPoint.X));
+                                editor.SelectedArea.Height = Math.Abs(newPoint.Y - top);
                             }
                             break;
 
@@ -909,8 +914,8 @@ namespace ScreenCraft
                             }
                             else
                             {
-                                editor.SelectedArea.Width = newPoint.X - left;
-                                editor.SelectedArea.Height = newPoint.Y - top;
+                                editor.SelectedArea.Width = Math.Abs(newPoint.X - left);
+                                editor.SelectedArea.Height = Math.Abs(newPoint.Y - top);
                             }
                             break;
                     }
@@ -942,12 +947,13 @@ namespace ScreenCraft
                     {
                         Canvas.SetLeft(editor.SelectedArea, newLeft);
                         Canvas.SetTop(editor.SelectedArea, newtop);
-                        editor.SelectedArea.Width = width;
-                        editor.SelectedArea.Height = height;
+                        editor.SelectedArea.Width = Math.Abs(width);
+                        editor.SelectedArea.Height = Math.Abs(height);
                     }
                 }
                 startPoint = newPoint;
                 editor.UpdateImage();
+                editor.SelectedVisual.UpdatePosition(editor.SelectedArea);
             }
             else
             {

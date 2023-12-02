@@ -66,23 +66,12 @@ namespace ScreenCraft
 
             // Menu Item 1
 
-            ToolStripMenuItem menuItem1 = new("Option1");
+            ToolStripMenuItem menuItem1 = new("Screenshot");
             menuItem1.Click += (sender, eventArgs) =>
             {
-                Trace.WriteLine("Option1");
-                EditorWindow editorWindow = new();
-                editorWindow.Show();
+                ShowEditorWindow();
             };
             contextMenu.Items.Add(menuItem1);
-
-            // Menu Item 2
-
-            ToolStripMenuItem menuItem2 = new("Option2");
-            menuItem2.Click += (sender, eventArgs) =>
-            {
-                Trace.WriteLine("Option2");
-            };
-            contextMenu.Items.Add(menuItem2);
 
             // Menu Item Exit
 
